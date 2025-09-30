@@ -10,11 +10,13 @@ namespace PDFEditor.Controllers
     {
         private readonly IPDFService _pdfService;
         private readonly ILogger<PDFController> _logger;
+        private readonly string _uploadPath;
 
         public PDFController(IPDFService pdfService, ILogger<PDFController> logger)
         {
             _pdfService = pdfService;
             _logger = logger;
+            _uploadPath = "uploads"; 
         }
 
         [HttpPost("upload")]
@@ -43,8 +45,16 @@ namespace PDFEditor.Controllers
         {
             try
             {
-                var preview = await _pdfService.GetPDFPreviewAsync(fileId, page);
-                return Ok(preview);
+                var filePath = Path.Combine(_uploadPath, $"{fileId}.pdf");
+
+                if (!System.IO.File.Exists(filePath))
+                    return NotFound("PDF file not found");
+
+                // build URL that frontend can load
+                var fileUrl = $"{Request.Scheme}://{Request.Host}/api/pdf/file/{fileId}";
+
+                return Ok(new { previewUrl = fileUrl });
+
             }
             catch (FileNotFoundException)
             {
@@ -53,6 +63,26 @@ namespace PDFEditor.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting PDF preview");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("file/{fileId}")]
+        public IActionResult GetPDFFile(string fileId)
+        {
+            try
+            {
+                var filePath = Path.Combine(_uploadPath, $"{fileId}.pdf");
+
+                if (!System.IO.File.Exists(filePath))
+                    return NotFound("PDF file not found");
+
+                var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                return File(stream, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving PDF file");
                 return StatusCode(500, "Internal server error");
             }
         }
