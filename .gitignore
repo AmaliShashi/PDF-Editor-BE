@@ -1,0 +1,7 @@
+# Ignore Visual Studio files
+.vs/
+*.vsidx
+
+# Ignore build output
+bin/
+obj/
