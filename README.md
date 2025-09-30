@@ -23,41 +23,6 @@ This is the backend API for the PDF Editor application built with ASP.NET Core M
    The API will be available at:
    - Swagger UI: `https://localhost:44322/swagger`
 
-  ## API Endpoints
-
-### Upload PDF
-```
-POST /api/pdf/upload
-Content-Type: multipart/form-data
-Body: PDF file
-```
-
-### Get PDF Preview
-```
-GET /api/pdf/preview/{fileId}?page=1
-Returns: Base64 image and text content
-```
-
-### Edit PDF
-```
-POST /api/pdf/edit/{fileId}
-Content-Type: application/json
-Body: PDFEditRequest
-```
-
-### Export PDF
-```
-POST /api/pdf/export/{fileId}
-Content-Type: application/json
-Body: ExportRequest
-Returns: File download
-```
-
-### Delete PDF
-```
-DELETE /api/pdf/{fileId}
-```
-
 ## Libraries Used
 
 - **Aspose.PDF**: PDF manipulation, text extraction, page rendering
